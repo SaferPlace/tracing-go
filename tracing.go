@@ -13,6 +13,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 	"google.golang.org/grpc"
 )
 
@@ -25,10 +26,11 @@ type Config struct {
 	SamplingRatio float64       `yaml:"sampling_ratio" default:"1" split_words:"true"`
 }
 
-// NewTracingProvider creates the provider configuration from the config. If the
+// NewTracingProvider creates the provider configuration from the config. If tracing is not enabled,
+// a noop tracing provider is returned.
 func NewTracingProvider(ctx context.Context, cfg *Config) (trace.TracerProvider, io.Closer, error) {
 	if !cfg.Enabled {
-		return trace.NewNoopTracerProvider(), noopCloser, nil
+		return noop.NewTracerProvider(), noopCloser, nil
 	}
 
 	r, err := resource.New(ctx,
