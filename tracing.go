@@ -21,10 +21,10 @@ import (
 type Config struct {
 	Enabled bool `yaml:"enabled" default:"false"`
 
-	Timeout       time.Duration `yaml:"timeout" default:"1s"`
-	Endpoint      string        `yaml:"endpoint" default:"otel-collector:4317"`
-	SamplingRatio float64       `yaml:"sampling_ratio" default:"1" split_words:"true"`
-	ServiceName   string        `yaml:"service_name" default:"" split_words:"true"`
+	Timeout       time.Duration `yaml:"timeout" json:"timeout" default:"1s"`
+	Endpoint      string        `yaml:"endpoint" json:"endpoint" default:"otel-collector:4317"`
+	SamplingRatio float64       `yaml:"sampling_ratio" json:"sampling_ratio" default:"1" split_words:"true"`
+	ServiceName   string        `yaml:"service_name" json:"service_name" default:"" split_words:"true"`
 }
 
 // NewTracingProvider creates the provider configuration from the config. If tracing is not enabled,
