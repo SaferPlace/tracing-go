@@ -24,6 +24,7 @@ type Config struct {
 	Timeout       time.Duration `yaml:"timeout" default:"1s"`
 	Endpoint      string        `yaml:"endpoint" default:"otel-collector:4317"`
 	SamplingRatio float64       `yaml:"sampling_ratio" default:"1" split_words:"true"`
+	ServiceName   string        `yaml:"service_name" default:"" split_words:"true"`
 }
 
 // NewTracingProvider creates the provider configuration from the config. If tracing is not enabled,
@@ -38,10 +39,10 @@ func NewTracingProvider(ctx context.Context, cfg *Config) (trace.TracerProvider,
 		resource.WithOS(),
 		resource.WithContainer(),
 		resource.WithHost(),
-		resource.WithAttributes(semconv.ServiceName("saferplace")),
+		resource.WithAttributes(semconv.ServiceName(cfg.ServiceName)),
 	)
 	if err != nil {
-		return nil, nil, fmt.Errorf("unable to ")
+		return nil, nil, fmt.Errorf("unable to create SDK resource: %w", err)
 	}
 
 	exporter, err := newExporter(ctx, cfg)
@@ -63,6 +64,7 @@ func NewTracingProvider(ctx context.Context, cfg *Config) (trace.TracerProvider,
 		sdktrace.WithSampler(sampler),
 	)
 
+	// This will override the default, that's why its recommended to use the instanciated version
 	otel.SetTracerProvider(tp)
 
 	return tp, shutdownCloser(tp.Shutdown), nil
